@@ -2,7 +2,12 @@ import type { TaskNode } from "./types";
 
 const INDENT_PX = 20;
 const PRIORITY_LABELS: Record<number, string> = { 1: "", 2: "!", 3: "!!", 4: "!!!" };
-const PRIORITY_CLASS: Record<number, string> = { 1: "", 2: "todoist-p2", 3: "todoist-p3", 4: "todoist-p4" };
+const PRIORITY_CLASS: Record<number, string> = {
+	1: "",
+	2: "todoist-p2",
+	3: "todoist-p3",
+	4: "todoist-p4",
+};
 
 /** Format due as "02/18/26" or "02/18/26 @ 4:00 PM" when time is present. */
 function formatDue(due: TodoistTask["due"]): string {
@@ -44,7 +49,11 @@ function escapeHtml(s: string): string {
 	return div.innerHTML;
 }
 
-function createTaskLine(task: TodoistTask, depth: number, onToggle: (taskId: string, completed: boolean) => void): HTMLElement {
+function createTaskLine(
+	task: TodoistTask,
+	depth: number,
+	onToggle: (taskId: string, completed: boolean) => void
+): HTMLElement {
 	const row = document.createElement("div");
 	row.className = "todoist-task-row" + (depth > 0 ? " todoist-subtask" : "");
 	row.style.paddingLeft = `${depth * INDENT_PX}px`;
@@ -63,7 +72,8 @@ function createTaskLine(task: TodoistTask, depth: number, onToggle: (taskId: str
 	line.appendChild(label);
 
 	const contentSpan = document.createElement("span");
-	contentSpan.className = "todoist-task-content" + (task.is_completed ? " todoist-task-completed" : "");
+	contentSpan.className =
+		"todoist-task-content" + (task.is_completed ? " todoist-task-completed" : "");
 	contentSpan.innerHTML = escapeHtml(task.content);
 	line.appendChild(contentSpan);
 

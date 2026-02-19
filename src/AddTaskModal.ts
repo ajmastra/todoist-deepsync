@@ -22,14 +22,14 @@ export class AddTaskModal extends Modal {
 	private projects: TodoistProject[] = [];
 	private sections: TodoistSection[] = [];
 	private tasks: TodoistTask[] = [];
-	
+
 	// Selected values
 	private selectedProjectId: string = "";
 	private selectedSectionId: string | null = null;
 	private selectedParentId: string | null = null;
 	private selectedDue: { date?: string; string?: string } | null = null;
 	private selectedPriority: number = 1;
-	
+
 	// UI elements
 	private contentInput!: HTMLInputElement;
 	private projectBtn!: HTMLElement;
@@ -73,7 +73,7 @@ export class AddTaskModal extends Modal {
 
 		// Icon buttons row
 		const iconRow = contentEl.createDiv({ cls: "todoist-modal-icon-row" });
-		
+
 		// Project button
 		this.projectBtn = iconRow.createDiv({ cls: "todoist-icon-btn" });
 		setIcon(this.projectBtn, "folder");
@@ -139,7 +139,11 @@ export class AddTaskModal extends Modal {
 
 	private async loadSectionsAndTasks() {
 		if (!this.selectedProjectId) return;
-		this.sections = await fetchSections({ requestUrl: this.requestUrl }, this.token, this.selectedProjectId);
+		this.sections = await fetchSections(
+			{ requestUrl: this.requestUrl },
+			this.token,
+			this.selectedProjectId
+		);
 		this.tasks = await fetchTasks(
 			{ requestUrl: this.requestUrl },
 			{ token: this.token, projectId: this.selectedProjectId, includeCompleted: false }
@@ -246,7 +250,9 @@ export class AddTaskModal extends Modal {
 		for (const qd of quickDates) {
 			menu.addItem((item) => {
 				item.setTitle(qd.label);
-				item.setChecked(this.selectedDue?.string === qd.value || (!this.selectedDue && qd.value === ""));
+				item.setChecked(
+					this.selectedDue?.string === qd.value || (!this.selectedDue && qd.value === "")
+				);
 				item.onClick(() => {
 					this.selectedDue = qd.value ? { string: qd.value } : null;
 					this.updateDueButton();
@@ -334,15 +340,18 @@ export class AddTaskModal extends Modal {
 		if (!this.selectedProjectId) return;
 
 		try {
-			await createTask({ requestUrl: this.requestUrl }, {
-				token: this.token,
-				content,
-				project_id: this.selectedProjectId,
-				section_id: this.selectedSectionId,
-				parent_id: this.selectedParentId,
-				due: this.selectedDue,
-				priority: this.selectedPriority,
-			});
+			await createTask(
+				{ requestUrl: this.requestUrl },
+				{
+					token: this.token,
+					content,
+					project_id: this.selectedProjectId,
+					section_id: this.selectedSectionId,
+					parent_id: this.selectedParentId,
+					due: this.selectedDue,
+					priority: this.selectedPriority,
+				}
+			);
 			(this as AddTaskModal & { onSuccess?: () => void }).onSuccess?.();
 			this.close();
 		} catch (e) {

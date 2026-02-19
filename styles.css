@@ -105,9 +105,15 @@
 	font-weight: bold;
 }
 
-.todoist-p2 { color: var(--text-muted); }
-.todoist-p3 { color: var(--color-orange); }
-.todoist-p4 { color: var(--color-red); }
+.todoist-p2 {
+	color: var(--text-muted);
+}
+.todoist-p3 {
+	color: var(--color-orange);
+}
+.todoist-p4 {
+	color: var(--color-red);
+}
 
 /* Collapsible subtasks */
 .todoist-subtask-details {

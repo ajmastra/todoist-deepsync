@@ -58,7 +58,17 @@ interface SyncItem {
 /** Sync API response when reading resources. */
 interface SyncReadResponse {
 	items?: SyncItem[];
-	projects?: Array<{ id: string; name: string; order: number; color: string; is_shared?: boolean; is_favorite?: boolean; is_inbox_project?: boolean; parent_id?: string | null; child_order?: number }>;
+	projects?: Array<{
+		id: string;
+		name: string;
+		order: number;
+		color: string;
+		is_shared?: boolean;
+		is_favorite?: boolean;
+		is_inbox_project?: boolean;
+		parent_id?: string | null;
+		child_order?: number;
+	}>;
 	sections?: Array<{ id: string; name: string; order: number; project_id: string }>;
 	sync_token?: string;
 }
@@ -70,7 +80,7 @@ function syncItemToTask(item: SyncItem): TodoistTask {
 				date: item.due.date ?? "",
 				datetime: item.due.datetime,
 				string: item.due.string,
-		  }
+			}
 		: null;
 	return {
 		id: item.id,
@@ -143,7 +153,7 @@ function isTomorrow(date: Date): boolean {
 /** Apply client-side filter matching Todoist filter syntax. */
 function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 	const filterLower = filter.trim().toLowerCase();
-	
+
 	// Handle common filter patterns
 	if (filterLower === "today") {
 		return tasks.filter((task) => {
@@ -152,7 +162,7 @@ function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 			return isToday(dueDate);
 		});
 	}
-	
+
 	if (filterLower === "overdue") {
 		return tasks.filter((task) => {
 			const dueDate = parseDueDate(task);
@@ -160,7 +170,7 @@ function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 			return isOverdue(dueDate);
 		});
 	}
-	
+
 	if (filterLower === "tomorrow") {
 		return tasks.filter((task) => {
 			const dueDate = parseDueDate(task);
@@ -168,7 +178,7 @@ function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 			return isTomorrow(dueDate);
 		});
 	}
-	
+
 	// Handle "today | overdue" (today OR overdue)
 	if (filterLower.includes("|")) {
 		const parts = filterLower.split("|").map((p) => p.trim());
@@ -183,7 +193,7 @@ function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 			});
 		});
 	}
-	
+
 	// Handle "today & overdue" (today AND overdue - which would be empty, but handle it)
 	if (filterLower.includes("&")) {
 		const parts = filterLower.split("&").map((p) => p.trim());
@@ -198,7 +208,7 @@ function applyFilter(tasks: TodoistTask[], filter: string): TodoistTask[] {
 			});
 		});
 	}
-	
+
 	// For project filters like "#ProjectName", we'd need project names, which we don't have here
 	// So for now, just return all tasks if filter doesn't match known patterns
 	// In a full implementation, you'd parse project names from the filter
@@ -234,7 +244,9 @@ export async function fetchTasks(
 		try {
 			const data = await parseJson<unknown>(res);
 			if (data != null) errBody = JSON.stringify(data);
-		} catch (_) {}
+		} catch (_) {
+			// Ignore JSON parse errors, fall back to status code
+		}
 		throw new Error(`Todoist API error ${res.status}: ${errBody}`);
 	}
 
@@ -255,11 +267,7 @@ export async function fetchTasks(
 /**
  * Close (complete) a task via Sync API command.
  */
-export async function closeTask(
-	app: AppWithRequest,
-	token: string,
-	taskId: string
-): Promise<void> {
+export async function closeTask(app: AppWithRequest, token: string, taskId: string): Promise<void> {
 	const uuid = crypto.randomUUID?.() ?? `close-${taskId}-${Date.now()}`;
 	const commands = [{ type: "item_complete", uuid, args: { id: taskId } }];
 	const body = new URLSearchParams();
@@ -280,7 +288,12 @@ export async function closeTask(
 	}
 	const data = await parseJson<{ sync_status?: Record<string, unknown> }>(res);
 	const status = data.sync_status?.[uuid];
-	if (status !== "ok" && status != null && typeof status === "object" && (status as { error?: string }).error) {
+	if (
+		status !== "ok" &&
+		status != null &&
+		typeof status === "object" &&
+		(status as { error?: string }).error
+	) {
 		throw new Error((status as { error: string }).error);
 	}
 }
@@ -313,7 +326,12 @@ export async function reopenTask(
 	}
 	const data = await parseJson<{ sync_status?: Record<string, unknown> }>(res);
 	const status = data.sync_status?.[uuid];
-	if (status !== "ok" && status != null && typeof status === "object" && (status as { error?: string }).error) {
+	if (
+		status !== "ok" &&
+		status != null &&
+		typeof status === "object" &&
+		(status as { error?: string }).error
+	) {
 		throw new Error((status as { error: string }).error);
 	}
 }
@@ -362,9 +380,17 @@ export async function createTask(app: AppWithRequest, opts: CreateTaskOptions): 
 	if (res.status !== 200) {
 		throw new Error(`Todoist create task failed: ${res.status}`);
 	}
-	const data = await parseJson<{ sync_status?: Record<string, unknown>; temp_id_mapping?: Record<string, string> }>(res);
+	const data = await parseJson<{
+		sync_status?: Record<string, unknown>;
+		temp_id_mapping?: Record<string, string>;
+	}>(res);
 	const status = data.sync_status?.[uuid];
-	if (status !== "ok" && status != null && typeof status === "object" && (status as { error?: string }).error) {
+	if (
+		status !== "ok" &&
+		status != null &&
+		typeof status === "object" &&
+		(status as { error?: string }).error
+	) {
 		throw new Error((status as { error: string }).error);
 	}
 	const newId = data.temp_id_mapping?.[tempId];
@@ -374,10 +400,7 @@ export async function createTask(app: AppWithRequest, opts: CreateTaskOptions): 
 /**
  * Get all projects via Sync API.
  */
-export async function fetchProjects(
-	app: AppWithRequest,
-	token: string
-): Promise<TodoistProject[]> {
+export async function fetchProjects(app: AppWithRequest, token: string): Promise<TodoistProject[]> {
 	const body = new URLSearchParams();
 	body.set("sync_token", "*");
 	body.set("resource_types", JSON.stringify(["projects"]));

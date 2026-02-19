@@ -1,4 +1,11 @@
-import { Plugin, MarkdownPostProcessorContext, MarkdownRenderChild, Notice, requestUrl, setIcon } from "obsidian";
+import {
+	Plugin,
+	MarkdownPostProcessorContext,
+	MarkdownRenderChild,
+	Notice,
+	requestUrl,
+	setIcon,
+} from "obsidian";
 import { buildTaskTree } from "./taskTree";
 import { fetchTasks, closeTask, reopenTask } from "./todoistApi";
 import { parseTodoistQuery } from "./parseQuery";
@@ -50,9 +57,12 @@ export default class TodoistSubtaskSyncPlugin extends Plugin {
 	resetRefreshInterval() {
 		if (this.refreshIntervalId) clearInterval(this.refreshIntervalId);
 		const mins = Math.max(1, this.settings.refreshIntervalMinutes);
-		this.refreshIntervalId = setInterval(() => {
-			this.blockRenderers.forEach((r) => r.render());
-		}, mins * 60 * 1000);
+		this.refreshIntervalId = setInterval(
+			() => {
+				this.blockRenderers.forEach((r) => r.render());
+			},
+			mins * 60 * 1000
+		);
 	}
 }
 

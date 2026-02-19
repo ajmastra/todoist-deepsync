@@ -30,7 +30,9 @@ export class TodoistSubtaskSyncSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Default project or filter")
-			.setDesc("Default project ID, section ID, or filter string when the block is empty (e.g. 123456 or today).")
+			.setDesc(
+				"Default project ID, section ID, or filter string when the block is empty (e.g. 123456 or today)."
+			)
 			.addText((text) =>
 				text
 					.setPlaceholder("Project ID, section ID, or filter")

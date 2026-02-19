@@ -29,10 +29,10 @@ Obsidian plugin that syncs tasks from Todoist into your notes with **full subtas
    In Todoist: **Settings → Integrations → API token**. Copy the token.
 
 3. **Configure the plugin**  
-   In Obsidian: **Settings → Community plugins → Todoist DeepSync**  
-   - Paste your **API token**.  
-   - Optionally set a **default project or filter** (used when the block has no query).  
-   - Set **refresh interval** (minutes).  
+   In Obsidian: **Settings → Community plugins → Todoist DeepSync**
+   - Paste your **API token**.
+   - Optionally set a **default project or filter** (used when the block has no query).
+   - Set **refresh interval** (minutes).
    - Toggle **Show completed tasks** if desired.
 
 ## Query block syntax
@@ -44,10 +44,12 @@ Use a **todoist** fenced code block. The first line (or the whole block content)
 Fetch all tasks from a specific project by its numeric ID.
 
 **Syntax:**
+
 - `project:PROJECT_ID` or `project PROJECT_ID`
 - Or just the numeric ID: `PROJECT_ID`
 
 **Examples:**
+
 ````markdown
 ```todoist
 project:2203306141
@@ -69,9 +71,11 @@ project 2203306141
 Fetch all tasks from a specific section within a project.
 
 **Syntax:**
+
 - `section:SECTION_ID` or `section SECTION_ID`
 
 **Examples:**
+
 ````markdown
 ```todoist
 section:12345
@@ -89,16 +93,17 @@ section 12345
 Filter tasks by date criteria. Filters are applied client-side and **exclude tasks without due dates** unless explicitly included.
 
 **Syntax:**
+
 - `filter:FILTER` or `filter FILTER` or just the filter string directly
 - Filter strings are case-insensitive
 
 **Supported filter keywords:**
 
-| Filter | Description |
-|--------|-------------|
-| `today` | Tasks due today only (excludes overdue and tasks without dates) |
-| `overdue` | Tasks that are overdue (past due date) |
-| `tomorrow` | Tasks due tomorrow |
+| Filter     | Description                                                     |
+| ---------- | --------------------------------------------------------------- |
+| `today`    | Tasks due today only (excludes overdue and tasks without dates) |
+| `overdue`  | Tasks that are overdue (past due date)                          |
+| `tomorrow` | Tasks due tomorrow                                              |
 
 **Combining filters:**
 
@@ -112,8 +117,10 @@ Filter tasks by date criteria. Filters are applied client-side and **exclude tas
   - Note: AND combinations are less common for date filters
 
 **Examples:**
+
 ````markdown
 <!-- Today's tasks only -->
+
 ```todoist
 today
 ```
@@ -123,27 +130,32 @@ filter:today
 ```
 
 <!-- Overdue tasks -->
+
 ```todoist
 overdue
 ```
 
 <!-- Today OR overdue -->
+
 ```todoist
 today | overdue
 ```
 
 <!-- Today OR tomorrow -->
+
 ```todoist
 today | tomorrow
 ```
 
 <!-- Using filter: prefix -->
+
 ```todoist
 filter:today | overdue
 ```
 ````
 
 **Important notes about filters:**
+
 - Filters **exclude tasks without due dates** by default
 - Date comparisons ignore time (only compare dates)
 - Filters are case-insensitive
@@ -157,9 +169,12 @@ If the code block is empty, the plugin uses the **Default project or filter** se
 - Otherwise, it's treated as a **filter** string (e.g., `today`, `overdue`)
 
 **Example:**
+
 ````markdown
 <!-- Uses default from plugin settings -->
+
 ```todoist
+
 ```
 ````
 
@@ -167,40 +182,49 @@ If the code block is empty, the plugin uses the **Default project or filter** se
 
 ````markdown
 <!-- Use default project/filter from settings -->
+
 ```todoist
+
 ```
 
 <!-- All tasks from a specific project -->
+
 ```todoist
 project:2203306141
 ```
 
 <!-- Tasks from a specific section -->
+
 ```todoist
 section:12345
 ```
 
 <!-- Today's tasks only -->
+
 ```todoist
 today
 ```
 
 <!-- Overdue tasks -->
+
 ```todoist
 overdue
 ```
 
 <!-- Today OR overdue tasks -->
+
 ```todoist
 today | overdue
 ```
 
 <!-- Tomorrow's tasks -->
+
 ```todoist
 tomorrow
 ```
 
 <!-- Today OR tomorrow -->
+
 ```todoist
 today | tomorrow
 ```
@@ -230,12 +254,14 @@ today | tomorrow
 ## Development
 
 This project uses:
+
 - **TypeScript** for type safety
 - **ESLint** for code linting
 - **Prettier** for code formatting
 - **GitHub Actions** for CI/CD
 
 Before committing, run `npm run check` to ensure code quality. The CI pipeline will automatically:
+
 - Type check the code
 - Run linting
 - Check formatting

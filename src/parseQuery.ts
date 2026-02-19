@@ -14,21 +14,24 @@ export function parseTodoistQuery(source: string): TodoistQuery {
 	if (!line) return q;
 
 	// filter:"..." or filter:today
-	const filterMatch = line.match(/^\s*filter\s*:\s*["']?([^"'\n]+)["']?$/i) || line.match(/^\s*filter\s+([^\n]+)$/i);
+	const filterMatch =
+		line.match(/^\s*filter\s*:\s*["']?([^"'\n]+)["']?$/i) || line.match(/^\s*filter\s+([^\n]+)$/i);
 	if (filterMatch) {
 		q.filter = filterMatch[1].trim();
 		return q;
 	}
 
 	// project:123 or project 123
-	const projectMatch = line.match(/^\s*project\s*:\s*(\S+)$/i) || line.match(/^\s*project\s+(\S+)$/i);
+	const projectMatch =
+		line.match(/^\s*project\s*:\s*(\S+)$/i) || line.match(/^\s*project\s+(\S+)$/i);
 	if (projectMatch) {
 		q.projectId = projectMatch[1].trim();
 		return q;
 	}
 
 	// section:456 or section 456
-	const sectionMatch = line.match(/^\s*section\s*:\s*(\S+)$/i) || line.match(/^\s*section\s+(\S+)$/i);
+	const sectionMatch =
+		line.match(/^\s*section\s*:\s*(\S+)$/i) || line.match(/^\s*section\s+(\S+)$/i);
 	if (sectionMatch) {
 		q.sectionId = sectionMatch[1].trim();
 		return q;
