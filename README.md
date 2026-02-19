@@ -1,5 +1,11 @@
 # Todoist DeepSync
 
+[![CI](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml/badge.svg)](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
+[![Linter: ESLint](https://img.shields.io/badge/linter-eslint-4B32C3.svg)](https://eslint.org/)
+
 Obsidian plugin that syncs tasks from Todoist into your notes with **full subtask hierarchy**, inline code blocks, and checkable completion—similar to the community "Todoist Sync" plugin but with proper subtask rendering.
 
 ## Features
@@ -209,11 +215,31 @@ today | tomorrow
 
 ## Building from source
 
-- **Requirements:** Node.js, npm.
+- **Requirements:** Node.js 20+, npm.
 - **Commands:**
-  - `npm install`
-  - `npm run dev` — watch build (outputs `main.js`).
-  - `npm run build` — production build.
+  - `npm install` — Install dependencies
+  - `npm run dev` — Watch build (outputs `main.js`)
+  - `npm run build` — Production build
+  - `npm run typecheck` — Type check without building
+  - `npm run lint` — Run ESLint
+  - `npm run lint:fix` — Fix ESLint issues automatically
+  - `npm run format` — Format code with Prettier
+  - `npm run format:check` — Check code formatting
+  - `npm run check` — Run all checks (typecheck, lint, format)
+
+## Development
+
+This project uses:
+- **TypeScript** for type safety
+- **ESLint** for code linting
+- **Prettier** for code formatting
+- **GitHub Actions** for CI/CD
+
+Before committing, run `npm run check` to ensure code quality. The CI pipeline will automatically:
+- Type check the code
+- Run linting
+- Check formatting
+- Build the project
 
 ## Tech stack
 
@@ -223,4 +249,4 @@ today | tomorrow
 
 ## License
 
-Use and modify as you like. No warranty.
+MIT

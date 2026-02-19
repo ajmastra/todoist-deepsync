@@ -1,0 +1,6 @@
+node_modules/
+main.js
+*.map
+package-lock.json
+dist/
+build/
