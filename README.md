@@ -239,7 +239,7 @@ today | tomorrow
 
 ## Building from source
 
-- **Requirements:** Node.js 20+, npm.
+- **Requirements:** Node.js 20+, npm 8.3+.
 - **Commands:**
   - `npm install` — Install dependencies
   - `npm run dev` — Watch build (outputs `main.js`)
@@ -256,7 +256,7 @@ today | tomorrow
 This project uses:
 
 - **TypeScript** for type safety
-- **ESLint** for code linting
+- **ESLint 9** (flat config) for code linting
 - **Prettier** for code formatting
 - **GitHub Actions** for CI/CD
 
@@ -266,6 +266,8 @@ Before committing, run `npm run check` to ensure code quality. The CI pipeline w
 - Run linting
 - Check formatting
 - Build the project
+
+**Note:** This project uses ESLint 9 with the flat config format (`eslint.config.mjs`). The `minimatch` vulnerability is mitigated via npm `overrides` in `package.json`. The `ajv` vulnerability in ESLint's dependencies is a dev-only dependency and requires specific conditions (`$data` option) that ESLint doesn't use, so it poses minimal risk.
 
 ## Tech stack
 

@@ -54,5 +54,8 @@ coverage/
 # Prettier
 .prettiercache
 
+# ESLint
+.eslintcache
+
 
 # main.js
