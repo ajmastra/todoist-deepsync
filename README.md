@@ -269,6 +269,8 @@ Before committing, run `npm run check` to ensure code quality. The CI pipeline w
 
 **Note:** This project uses ESLint 9 with the flat config format (`eslint.config.mjs`). The `minimatch` vulnerability is mitigated via npm `overrides` in `package.json`. The `ajv` vulnerability in ESLint's dependencies is a dev-only dependency and requires specific conditions (`$data` option) that ESLint doesn't use, so it poses minimal risk.
 
+**Lock file:** `package-lock.json` is committed to ensure reproducible builds and enable CI/CD caching.
+
 ## Tech stack
 
 - TypeScript, Obsidian Plugin API, Todoist Sync API (v1).
