@@ -71,7 +71,7 @@ export class AddTaskModal extends Modal {
 			placeholder: "Task description",
 		});
 
-		// Icon buttons row
+		// Icon buttons row — build all icons immediately so they appear at once
 		const iconRow = contentEl.createDiv({ cls: "todoist-modal-icon-row" });
 
 		// Project button
@@ -79,8 +79,6 @@ export class AddTaskModal extends Modal {
 		setIcon(this.projectBtn, "folder");
 		this.projectBtn.setAttribute("aria-label", "Project");
 		this.projectBtn.title = "Project";
-		await this.loadProjects();
-		this.updateProjectButton();
 		this.projectBtn.addEventListener("click", (e) => this.showProjectMenu(e));
 
 		// Section button
@@ -123,6 +121,13 @@ export class AddTaskModal extends Modal {
 		cancelBtn.addEventListener("click", () => this.close());
 		submitBtn.addEventListener("click", () => this.submit());
 		this.contentInput.focus();
+
+		// Load projects in the background so the full UI is visible immediately
+		this.loadProjects().then(() => {
+			this.updateProjectButton();
+			this.updateSectionButton();
+			this.updateParentButton();
+		});
 	}
 
 	private async loadProjects() {
@@ -184,6 +189,9 @@ export class AddTaskModal extends Modal {
 
 	private showProjectMenu(evt: MouseEvent) {
 		const menu = new Menu();
+		if (this.projects.length === 0) {
+			menu.addItem((item) => item.setTitle("Loading...").setDisabled(true));
+		}
 		for (const p of this.projects) {
 			menu.addItem((item) => {
 				item.setTitle(p.name);
