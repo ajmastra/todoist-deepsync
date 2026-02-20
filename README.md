@@ -1,12 +1,13 @@
 # Todoist DeepSync
 
-[![CI](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml/badge.svg)](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml)
+[![Build](https://img.shields.io/github/actions/workflow/status/ajmastra/todoist-deepsync/ci.yml?branch=main&label=build)](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/ajmastra/todoist-deepsync/graph/badge.svg)](https://codecov.io/gh/ajmastra/todoist-deepsync)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
 [![Linter: ESLint](https://img.shields.io/badge/linter-eslint-4B32C3.svg)](https://eslint.org/)
 
-Obsidian plugin that syncs tasks from Todoist into your notes with **full subtask hierarchy**, inline code blocks, and checkable completion—similar to the community "Todoist Sync" plugin but with proper subtask rendering.
+Obsidian plugin that syncs tasks from Todoist into your notes with **full subtask hierarchy**, inline code blocks, and checkable completion. Inspired by the [Sync with Todoist](https://github.com/jamiebrynes7/obsidian-todoist-plugin) plugin, with modifications and features tailored to my own workflow (including full subtask rendering, hierarchical project/section picker, and compact task creation).
 
 ## Features
 
@@ -276,6 +277,10 @@ Before committing, run `npm run check` to ensure code quality. The CI pipeline w
 - TypeScript, Obsidian Plugin API, Todoist Sync API (v1).
 - Bundling: esbuild (single `main.js`).
 - Note: Uses Todoist Sync API (`/api/v1/sync`) instead of REST API v2, as REST v2 endpoints return 410 Gone.
+
+## Credits
+
+This plugin was inspired by [Sync with Todoist](https://github.com/jamiebrynes7/obsidian-todoist-plugin) by [jamiebrynes7](https://github.com/jamiebrynes7). I wanted the same kind of Todoist-in-Obsidian experience but with my own modifications (subtask hierarchy, filters, and UI preferences), so I built Todoist DeepSync. Thank you to the original author and contributors for the inspiration.
 
 ## License
 

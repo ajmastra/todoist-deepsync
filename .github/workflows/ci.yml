@@ -35,6 +35,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
+
       - name: Check build output
         run: |
           if [ ! -f "main.js" ]; then
