@@ -177,7 +177,35 @@
 }
 
 .todoist-modal-input-container {
+	margin-bottom: 0.5em;
+}
+
+.todoist-modal-desc-container {
 	margin-bottom: 0.75em;
+}
+
+.todoist-modal-desc-input {
+	width: 100%;
+	padding: 8px 10px;
+	border-radius: 6px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	font-size: 0.9em;
+	font-family: inherit;
+	resize: vertical;
+	min-height: 4em;
+	box-sizing: border-box;
+}
+
+.todoist-modal-desc-input:focus {
+	outline: 2px solid var(--interactive-accent);
+	outline-offset: -1px;
+	border-color: var(--interactive-accent);
+}
+
+.todoist-modal-desc-input::placeholder {
+	color: var(--text-muted);
 }
 
 .todoist-modal-main-input {

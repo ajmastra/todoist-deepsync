@@ -37,6 +37,7 @@ export class AddTaskModal extends Modal {
 
 	// UI elements
 	private contentInput!: HTMLInputElement;
+	private descriptionInput!: HTMLTextAreaElement;
 	private projectSectionBtn!: HTMLElement;
 	private priorityBtn!: HTMLElement;
 	private dueBtn!: HTMLElement;
@@ -67,13 +68,21 @@ export class AddTaskModal extends Modal {
 		const titleRow = contentEl.createDiv({ cls: "todoist-modal-title-row" });
 		titleRow.createEl("h2", { text: "Create task" });
 
-		// Main task input
+		// Task name
 		const inputContainer = contentEl.createDiv({ cls: "todoist-modal-input-container" });
 		this.contentInput = inputContainer.createEl("input", {
 			type: "text",
 			cls: "todoist-modal-main-input",
-			placeholder: "Task description",
+			placeholder: "Task name",
 		});
+
+		// Description
+		const descContainer = contentEl.createDiv({ cls: "todoist-modal-desc-container" });
+		this.descriptionInput = descContainer.createEl("textarea", {
+			cls: "todoist-modal-desc-input",
+			placeholder: "Description",
+		});
+		this.descriptionInput.rows = 3;
 
 		// Icon buttons row — build all icons immediately so they appear at once
 		const iconRow = contentEl.createDiv({ cls: "todoist-modal-icon-row" });
@@ -418,6 +427,7 @@ export class AddTaskModal extends Modal {
 		const content = this.contentInput.value.trim();
 		if (!content) return;
 		if (!this.selectedProjectId) return;
+		const description = this.descriptionInput.value.trim();
 
 		try {
 			await createTask(
@@ -425,6 +435,7 @@ export class AddTaskModal extends Modal {
 				{
 					token: this.token,
 					content,
+					description: description || undefined,
 					project_id: this.selectedProjectId,
 					section_id: this.selectedSectionId,
 					parent_id: this.selectedParentId,

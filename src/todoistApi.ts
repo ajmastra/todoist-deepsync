@@ -339,6 +339,7 @@ export async function reopenTask(
 export interface CreateTaskOptions {
 	token: string;
 	content: string;
+	description?: string;
 	project_id: string;
 	section_id?: string | null;
 	parent_id?: string | null;
@@ -356,6 +357,8 @@ export async function createTask(app: AppWithRequest, opts: CreateTaskOptions): 
 		content: opts.content,
 		project_id: opts.project_id,
 	};
+	if (opts.description != null && opts.description !== "")
+		args.description = opts.description;
 	if (opts.section_id) args.section_id = opts.section_id;
 	if (opts.parent_id) args.parent_id = opts.parent_id;
 	if (opts.priority != null && opts.priority > 1) args.priority = opts.priority;
