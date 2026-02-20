@@ -1,7 +1,7 @@
 # Todoist DeepSync
 
 [![Build](https://img.shields.io/github/actions/workflow/status/ajmastra/todoist-deepsync/ci.yml?branch=main&label=build)](https://github.com/ajmastra/todoist-deepsync/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/ajmastra/todoist-deepsync/graph/badge.svg)](https://codecov.io/gh/ajmastra/todoist-deepsync)
+[![codecov](https://codecov.io/github/ajmastra/todoist-deepsync/graph/badge.svg?token=XD0XJZYUM7)](https://codecov.io/github/ajmastra/todoist-deepsync)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style: Prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://prettier.io/)
