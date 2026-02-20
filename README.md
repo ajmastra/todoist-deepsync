@@ -41,7 +41,87 @@ Obsidian plugin that syncs tasks from Todoist into your notes with **full subtas
    ```
    ````
 
-   Or `project:123`, `section:456`, or a plain filter string like `today` / `#Work`.
+   **Query syntax:** You can use `filter:...`, `project:123`, `section:456`, or a plain line (filter string or numeric project id). Both `key: value` and `key value` work (e.g. `filter:today` or `filter today`).
+
+### Filtering examples
+
+**By date (Todoist filter string):**
+
+````md
+```todoist
+today
+```
+````
+
+````md
+```todoist
+tomorrow
+```
+````
+
+````md
+```todoist
+overdue
+```
+````
+
+````md
+```todoist
+filter: "today | overdue"
+```
+````
+
+**By project or section (use IDs from Todoist):**
+
+````md
+```todoist
+project:2234567890
+```
+````
+
+````md
+```todoist
+section:2234567891
+```
+````
+
+Or with a space: `project 2234567890` or just the number `2234567890` for a project.
+
+**By label or project name (Todoist filter):**
+
+````md
+```todoist
+@Work
+```
+````
+
+````md
+```todoist
+#ProjectName
+```
+````
+
+**Combined filters (and / or / not):**
+
+````md
+```todoist
+today & @urgent
+```
+````
+
+````md
+```todoist
+overdue | today
+```
+````
+
+````md
+```todoist
+today & !subtask
+```
+````
+
+**Empty block:** Leave the block content empty to use the default filter from plugin settings.
 
 ## Development
 
