@@ -7,13 +7,16 @@ import {
 	fetchProjects,
 	fetchAllSections,
 	fetchSections,
-	type FetchTasksOptions,
-	type CreateTaskOptions,
+	type RequestUrlParam,
+	type RequestUrlResponse,
 } from "./todoistApi";
 
-type RequestUrlResponse = Awaited<ReturnType<{ requestUrl: (opts: unknown) => Promise<unknown> }["requestUrl"]>>;
+/** Mock app type compatible with API functions. */
+type MockApp = {
+	requestUrl: (opts: RequestUrlParam) => Promise<RequestUrlResponse>;
+};
 
-function mockApp(responses: RequestUrlResponse[]) {
+function mockApp(responses: RequestUrlResponse[]): MockApp {
 	let i = 0;
 	return {
 		requestUrl: vi.fn().mockImplementation(() => {
@@ -82,7 +85,7 @@ describe("todoistApi", () => {
 
 		it("returns tasks from sync API and maps to TodoistTask shape", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				includeCompleted: true,
 			});
@@ -100,7 +103,7 @@ describe("todoistApi", () => {
 
 		it("filters by projectId", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				projectId: "p1",
 				includeCompleted: true,
@@ -111,7 +114,7 @@ describe("todoistApi", () => {
 
 		it("filters by sectionId", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				sectionId: "s1",
 				includeCompleted: true,
@@ -122,7 +125,7 @@ describe("todoistApi", () => {
 
 		it("excludes completed when includeCompleted is false", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				includeCompleted: false,
 			});
@@ -132,7 +135,7 @@ describe("todoistApi", () => {
 
 		it("filters by today", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				filter: "today",
 				includeCompleted: true,
@@ -143,7 +146,7 @@ describe("todoistApi", () => {
 
 		it("filters by overdue", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				filter: "overdue",
 				includeCompleted: true,
@@ -153,7 +156,7 @@ describe("todoistApi", () => {
 
 		it("filters by tomorrow", async () => {
 			const app = mockApp([jsonRes({ items: syncItems })]);
-			const tasks = await fetchTasks(app as any, {
+			const tasks = await fetchTasks(app, {
 				token: "test",
 				filter: "tomorrow",
 				includeCompleted: true,
@@ -163,16 +166,20 @@ describe("todoistApi", () => {
 
 		it("throws on non-200 status", async () => {
 			const app = mockApp([{ status: 401, json: () => Promise.resolve({ error: "Unauthorized" }) }]);
-			await expect(
-				fetchTasks(app as any, { token: "test", includeCompleted: true })
-			).rejects.toThrow(/Todoist API error 401/);
+			await expect(fetchTasks(app, { token: "test", includeCompleted: true })).rejects.toThrow(
+				/Todoist API error 401/
+			);
 		});
 
 		it("parses response with text body when json() not available", async () => {
 			const app = mockApp([
-				{ status: 200, text: '{"items":[{"id":"1","content":"T","project_id":"p1","completed":false,"item_order":0}]}' },
+				{
+					status: 200,
+					text:
+						'{"items":[{"id":"1","content":"T","project_id":"p1","completed":false,"item_order":0}]}',
+				},
 			]);
-			const tasks = await fetchTasks(app as any, { token: "test", includeCompleted: true });
+			const tasks = await fetchTasks(app, { token: "test", includeCompleted: true });
 			expect(tasks).toHaveLength(1);
 			expect(tasks[0].content).toBe("T");
 		});
@@ -181,31 +188,29 @@ describe("todoistApi", () => {
 	describe("closeTask", () => {
 		it("sends item_complete and succeeds on ok sync_status", async () => {
 			const app = mockApp([jsonRes({ sync_status: { [FIXED_UUID]: "ok" } })]);
-			await expect(closeTask(app as any, "token", "task-1")).resolves.toBeUndefined();
+			await expect(closeTask(app, "token", "task-1")).resolves.toBeUndefined();
 		});
 
 		it("throws on non-200", async () => {
 			const app = mockApp([{ status: 500 }]);
-			await expect(closeTask(app as any, "token", "task-1")).rejects.toThrow(/close task failed/);
+			await expect(closeTask(app, "token", "task-1")).rejects.toThrow(/close task failed/);
 		});
 
 		it("throws on sync_status error object", async () => {
-			const app = mockApp([
-				jsonRes({ sync_status: { [FIXED_UUID]: { error: "Task not found" } } }),
-			]);
-			await expect(closeTask(app as any, "token", "task-1")).rejects.toThrow("Task not found");
+			const app = mockApp([jsonRes({ sync_status: { [FIXED_UUID]: { error: "Task not found" } } })]);
+			await expect(closeTask(app, "token", "task-1")).rejects.toThrow("Task not found");
 		});
 	});
 
 	describe("reopenTask", () => {
 		it("sends item_uncomplete and succeeds on ok", async () => {
 			const app = mockApp([jsonRes({ sync_status: { [FIXED_UUID]: "ok" } })]);
-			await expect(reopenTask(app as any, "token", "task-1")).resolves.toBeUndefined();
+			await expect(reopenTask(app, "token", "task-1")).resolves.toBeUndefined();
 		});
 
 		it("throws on non-200", async () => {
 			const app = mockApp([{ status: 500 }]);
-			await expect(reopenTask(app as any, "token", "task-1")).rejects.toThrow(/reopen task failed/);
+			await expect(reopenTask(app, "token", "task-1")).rejects.toThrow(/reopen task failed/);
 		});
 	});
 
@@ -218,7 +223,7 @@ describe("todoistApi", () => {
 					temp_id_mapping: { [FIXED_UUID]: "new-task-id-123" },
 				}),
 			]);
-			const id = await createTask(app as any, {
+			const id = await createTask(app, {
 				token: "t",
 				content: "New task",
 				project_id: "p1",
@@ -228,25 +233,23 @@ describe("todoistApi", () => {
 
 		it("throws on non-200", async () => {
 			const app = mockApp([{ status: 400 }]);
-			await expect(
-				createTask(app as any, { token: "t", content: "x", project_id: "p1" })
-			).rejects.toThrow(/create task failed/);
+			await expect(createTask(app, { token: "t", content: "x", project_id: "p1" })).rejects.toThrow(
+				/create task failed/
+			);
 		});
 
 		it("throws on sync_status error object", async () => {
-			const app = mockApp([
-				jsonRes({ sync_status: { [FIXED_UUID]: { error: "Invalid project" } } }),
-			]);
-			await expect(
-				createTask(app as any, { token: "t", content: "x", project_id: "p1" })
-			).rejects.toThrow("Invalid project");
+			const app = mockApp([jsonRes({ sync_status: { [FIXED_UUID]: { error: "Invalid project" } } })]);
+			await expect(createTask(app, { token: "t", content: "x", project_id: "p1" })).rejects.toThrow(
+				"Invalid project"
+			);
 		});
 
 		it("passes optional args when provided", async () => {
 			const app = mockApp([
 				jsonRes({ sync_status: { "add-uuid": "ok" }, temp_id_mapping: { "temp-id": "id" } }),
 			]);
-			await createTask(app as any, {
+			await createTask(app, {
 				token: "t",
 				content: "Task",
 				project_id: "p1",
@@ -256,7 +259,8 @@ describe("todoistApi", () => {
 				priority: 3,
 				description: "desc",
 			});
-			const body = (app as any).requestUrl.mock.calls[0][0].body;
+			const body = (app.requestUrl as unknown as { mock: { calls: [RequestUrlParam][] } }).mock
+				.calls[0][0].body;
 			expect(body).toContain("item_add");
 			expect(body).toContain("s1");
 			expect(body).toContain("parent1");
@@ -281,7 +285,7 @@ describe("todoistApi", () => {
 					],
 				}),
 			]);
-			const projects = await fetchProjects(app as any, "token");
+			const projects = await fetchProjects(app, "token");
 			expect(projects).toHaveLength(1);
 			expect(projects[0].id).toBe("p1");
 			expect(projects[0].name).toBe("Inbox");
@@ -290,7 +294,7 @@ describe("todoistApi", () => {
 
 		it("throws on non-200", async () => {
 			const app = mockApp([{ status: 401 }]);
-			await expect(fetchProjects(app as any, "token")).rejects.toThrow(/projects failed/);
+			await expect(fetchProjects(app, "token")).rejects.toThrow(/projects failed/);
 		});
 	});
 
@@ -298,12 +302,10 @@ describe("todoistApi", () => {
 		it("returns mapped sections", async () => {
 			const app = mockApp([
 				jsonRes({
-					sections: [
-						{ id: "s1", name: "Section A", order: 0, project_id: "p1" },
-					],
+					sections: [{ id: "s1", name: "Section A", order: 0, project_id: "p1" }],
 				}),
 			]);
-			const sections = await fetchAllSections(app as any, "token");
+			const sections = await fetchAllSections(app, "token");
 			expect(sections).toHaveLength(1);
 			expect(sections[0].id).toBe("s1");
 			expect(sections[0].name).toBe("Section A");
@@ -312,7 +314,7 @@ describe("todoistApi", () => {
 
 		it("throws on non-200", async () => {
 			const app = mockApp([{ status: 401 }]);
-			await expect(fetchAllSections(app as any, "token")).rejects.toThrow(/sections failed/);
+			await expect(fetchAllSections(app, "token")).rejects.toThrow(/sections failed/);
 		});
 	});
 
@@ -327,7 +329,7 @@ describe("todoistApi", () => {
 					],
 				}),
 			]);
-			const sections = await fetchSections(app as any, "token", "p1");
+			const sections = await fetchSections(app, "token", "p1");
 			expect(sections).toHaveLength(2);
 			expect(sections[0].id).toBe("s1");
 			expect(sections[1].id).toBe("s2");

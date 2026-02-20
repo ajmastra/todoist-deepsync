@@ -4,8 +4,13 @@ import type { TaskNode } from "./types";
 import type { TodoistTask } from "./types";
 
 /** Obsidian extends HTMLElement with addClass, empty, createDiv. Patch prototype for tests. */
+interface ObsidianElementProto {
+	addClass(cls: string): unknown;
+	empty(): unknown;
+	createDiv(opts?: { cls?: string }): HTMLDivElement;
+}
 beforeAll(() => {
-	const proto = HTMLElement.prototype as any;
+	const proto = HTMLElement.prototype as unknown as HTMLElement & ObsidianElementProto;
 	proto.addClass = function (cls: string) {
 		this.classList.add(cls);
 		return this;
@@ -101,7 +106,9 @@ describe("renderTaskTree", () => {
 			showCompleted: true,
 		});
 		expect(container.querySelector(".todoist-task-completed")).not.toBeNull();
-		const checkbox = container.querySelector('.task-list-item-checkbox[data-task-id="1"]') as HTMLInputElement;
+		const checkbox = container.querySelector(
+			'.task-list-item-checkbox[data-task-id="1"]'
+		) as HTMLInputElement;
 		expect(checkbox.checked).toBe(true);
 	});
 
@@ -117,9 +124,7 @@ describe("renderTaskTree", () => {
 
 	it("renders subtask with todoist-subtask class and indent", () => {
 		const container = makeContainer();
-		const roots: TaskNode[] = [
-			node(task("1", "Parent"), [node(task("2", "Child"))]),
-		];
+		const roots: TaskNode[] = [node(task("1", "Parent"), [node(task("2", "Child"))])];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
 			showCompleted: true,
@@ -132,9 +137,7 @@ describe("renderTaskTree", () => {
 
 	it("renders parent with details/summary for collapsible subtasks", () => {
 		const container = makeContainer();
-		const roots: TaskNode[] = [
-			node(task("1", "Parent"), [node(task("2", "Child"))]),
-		];
+		const roots: TaskNode[] = [node(task("1", "Parent"), [node(task("2", "Child"))])];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
 			showCompleted: true,
@@ -153,7 +156,9 @@ describe("renderTaskTree", () => {
 			onToggle,
 			showCompleted: true,
 		});
-		const checkbox = container.querySelector('.task-list-item-checkbox[data-task-id="1"]') as HTMLInputElement;
+		const checkbox = container.querySelector(
+			'.task-list-item-checkbox[data-task-id="1"]'
+		) as HTMLInputElement;
 		checkbox.checked = true;
 		checkbox.dispatchEvent(new Event("change", { bubbles: true }));
 		expect(onToggle).toHaveBeenCalledWith("1", true);
@@ -161,9 +166,7 @@ describe("renderTaskTree", () => {
 
 	it("renders due date when present (date only)", () => {
 		const container = makeContainer();
-		const roots: TaskNode[] = [
-			node(task("1", "Task", { due: { date: "2025-02-18" } })),
-		];
+		const roots: TaskNode[] = [node(task("1", "Task", { due: { date: "2025-02-18" } }))];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
 			showCompleted: true,
@@ -176,7 +179,7 @@ describe("renderTaskTree", () => {
 	it("renders due date with time (datetime)", () => {
 		const container = makeContainer();
 		const roots: TaskNode[] = [
-			node(task("1", "Task", { due: { datetime: "2025-02-18T16:30:00" } })),
+			node(task("1", "Task", { due: { date: "", datetime: "2025-02-18T16:30:00" } })),
 		];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
@@ -189,9 +192,7 @@ describe("renderTaskTree", () => {
 
 	it("renders due string when only due.string is set", () => {
 		const container = makeContainer();
-		const roots: TaskNode[] = [
-			node(task("1", "Task", { due: { string: "tomorrow" } })),
-		];
+		const roots: TaskNode[] = [node(task("1", "Task", { due: { date: "", string: "tomorrow" } }))];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
 			showCompleted: true,
@@ -203,9 +204,7 @@ describe("renderTaskTree", () => {
 
 	it("renders due date as-is when date does not match YYYY-MM-DD", () => {
 		const container = makeContainer();
-		const roots: TaskNode[] = [
-			node(task("1", "Task", { due: { date: "invalid" } })),
-		];
+		const roots: TaskNode[] = [node(task("1", "Task", { due: { date: "invalid" } }))];
 		renderTaskTree(container, roots, {
 			onToggle: vi.fn(),
 			showCompleted: true,

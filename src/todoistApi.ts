@@ -244,7 +244,7 @@ export async function fetchTasks(
 		try {
 			const data = await parseJson<unknown>(res);
 			if (data != null) errBody = JSON.stringify(data);
-		} catch (_) {
+		} catch {
 			// Ignore JSON parse errors, fall back to status code
 		}
 		throw new Error(`Todoist API error ${res.status}: ${errBody}`);

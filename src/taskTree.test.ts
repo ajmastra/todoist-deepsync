@@ -44,11 +44,7 @@ describe("buildTaskTree", () => {
 	});
 
 	it("builds parent-child from parent_id", () => {
-		const tasks = [
-			task("1", 0),
-			task("2", 0, "1"),
-			task("3", 1, "1"),
-		];
+		const tasks = [task("1", 0), task("2", 0, "1"), task("3", 1, "1")];
 		const roots = buildTaskTree(tasks);
 		expect(roots).toHaveLength(1);
 		expect(roots[0].task.id).toBe("1");
@@ -58,32 +54,19 @@ describe("buildTaskTree", () => {
 	});
 
 	it("sorts roots and children by order", () => {
-		const tasks = [
-			task("2", 2),
-			task("1", 1),
-			task("3", 3),
-		];
+		const tasks = [task("2", 2), task("1", 1), task("3", 3)];
 		const roots = buildTaskTree(tasks);
 		expect(roots.map((r) => r.task.id)).toEqual(["1", "2", "3"]);
 	});
 
 	it("sorts nested children by order", () => {
-		const tasks = [
-			task("1", 0),
-			task("2", 2, "1"),
-			task("3", 1, "1"),
-		];
+		const tasks = [task("1", 0), task("2", 2, "1"), task("3", 1, "1")];
 		const roots = buildTaskTree(tasks);
 		expect(roots[0].children.map((c) => c.task.id)).toEqual(["3", "2"]);
 	});
 
 	it("handles multiple roots and nested subtasks", () => {
-		const tasks = [
-			task("a", 1),
-			task("b", 0),
-			task("b1", 0, "b"),
-			task("b2", 1, "b"),
-		];
+		const tasks = [task("a", 1), task("b", 0), task("b1", 0, "b"), task("b2", 1, "b")];
 		const roots = buildTaskTree(tasks);
 		expect(roots).toHaveLength(2);
 		expect(roots[0].task.id).toBe("b");
