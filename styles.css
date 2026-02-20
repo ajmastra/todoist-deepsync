@@ -269,7 +269,9 @@
 	border-radius: 4px;
 	cursor: pointer;
 	opacity: 0.85;
-	transition: opacity 0.15s ease, background 0.15s ease;
+	transition:
+		opacity 0.15s ease,
+		background 0.15s ease;
 	max-width: 180px;
 	min-width: 32px;
 }

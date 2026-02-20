@@ -1,7 +1,13 @@
 import type { App } from "obsidian";
 import { Modal, setIcon, Menu } from "obsidian";
 import type { TodoistProject, TodoistSection, TodoistTask } from "./types";
-import { createTask, fetchAllSections, fetchProjects, fetchSections, fetchTasks } from "./todoistApi";
+import {
+	createTask,
+	fetchAllSections,
+	fetchProjects,
+	fetchSections,
+	fetchTasks,
+} from "./todoistApi";
 import type { RequestUrlParam, RequestUrlResponse } from "./todoistApi";
 
 /** Indent string for hierarchical menu (one level). */
@@ -140,7 +146,10 @@ export class AddTaskModal extends Modal {
 	}
 
 	/** Build project tree: roots (parent_id null) and children grouped by parent_id. */
-	private getProjectTree(): { roots: TodoistProject[]; childrenByParent: Map<string, TodoistProject[]> } {
+	private getProjectTree(): {
+		roots: TodoistProject[];
+		childrenByParent: Map<string, TodoistProject[]>;
+	} {
 		const childrenByParent = new Map<string, TodoistProject[]>();
 		const roots: TodoistProject[] = [];
 		const sorted = [...this.projects].sort((a, b) => a.order - b.order);
@@ -265,17 +274,12 @@ export class AddTaskModal extends Modal {
 		const { roots, childrenByParent } = this.getProjectTree();
 		const menu = new Menu();
 
-		const addProjectAndSections = (
-			project: TodoistProject,
-			depth: number
-		) => {
+		const addProjectAndSections = (project: TodoistProject, depth: number) => {
 			const indent = MENU_INDENT.repeat(depth);
 			// Project option (no section)
 			menu.addItem((item) => {
 				item.setTitle(indent + project.name);
-				item.setChecked(
-					this.selectedProjectId === project.id && this.selectedSectionId == null
-				);
+				item.setChecked(this.selectedProjectId === project.id && this.selectedSectionId == null);
 				item.onClick(async () => {
 					this.selectedProjectId = project.id;
 					this.selectedSectionId = null;
@@ -290,9 +294,7 @@ export class AddTaskModal extends Modal {
 			for (const s of sections) {
 				menu.addItem((item) => {
 					item.setTitle(indent + MENU_INDENT + "# " + s.name);
-					item.setChecked(
-						this.selectedProjectId === project.id && this.selectedSectionId === s.id
-					);
+					item.setChecked(this.selectedProjectId === project.id && this.selectedSectionId === s.id);
 					item.onClick(async () => {
 						this.selectedProjectId = project.id;
 						this.selectedSectionId = s.id;
