@@ -339,6 +339,7 @@ export async function reopenTask(
 export interface CreateTaskOptions {
 	token: string;
 	content: string;
+	description?: string;
 	project_id: string;
 	section_id?: string | null;
 	parent_id?: string | null;
@@ -356,6 +357,7 @@ export async function createTask(app: AppWithRequest, opts: CreateTaskOptions): 
 		content: opts.content,
 		project_id: opts.project_id,
 	};
+	if (opts.description != null && opts.description !== "") args.description = opts.description;
 	if (opts.section_id) args.section_id = opts.section_id;
 	if (opts.parent_id) args.parent_id = opts.parent_id;
 	if (opts.priority != null && opts.priority > 1) args.priority = opts.priority;
@@ -432,12 +434,11 @@ export async function fetchProjects(app: AppWithRequest, token: string): Promise
 }
 
 /**
- * Get sections (optionally for a project) via Sync API.
+ * Get all sections via Sync API (single call; filter client-side by project_id if needed).
  */
-export async function fetchSections(
+export async function fetchAllSections(
 	app: AppWithRequest,
-	token: string,
-	projectId: string
+	token: string
 ): Promise<TodoistSection[]> {
 	const body = new URLSearchParams();
 	body.set("sync_token", "*");
@@ -456,12 +457,22 @@ export async function fetchSections(
 	if (res.status !== 200) throw new Error(`Todoist sections failed: ${res.status}`);
 	const data = await parseJson<SyncReadResponse>(res);
 	const raw = data.sections ?? [];
-	return raw
-		.filter((s) => s.project_id === projectId)
-		.map((s) => ({
-			id: s.id,
-			name: s.name,
-			order: s.order,
-			project_id: s.project_id,
-		})) as TodoistSection[];
+	return raw.map((s) => ({
+		id: s.id,
+		name: s.name,
+		order: s.order,
+		project_id: s.project_id,
+	})) as TodoistSection[];
+}
+
+/**
+ * Get sections for a single project via Sync API.
+ */
+export async function fetchSections(
+	app: AppWithRequest,
+	token: string,
+	projectId: string
+): Promise<TodoistSection[]> {
+	const all = await fetchAllSections(app, token);
+	return all.filter((s) => s.project_id === projectId).sort((a, b) => a.order - b.order);
 }
