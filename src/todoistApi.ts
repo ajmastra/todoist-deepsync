@@ -432,12 +432,11 @@ export async function fetchProjects(app: AppWithRequest, token: string): Promise
 }
 
 /**
- * Get sections (optionally for a project) via Sync API.
+ * Get all sections via Sync API (single call; filter client-side by project_id if needed).
  */
-export async function fetchSections(
+export async function fetchAllSections(
 	app: AppWithRequest,
-	token: string,
-	projectId: string
+	token: string
 ): Promise<TodoistSection[]> {
 	const body = new URLSearchParams();
 	body.set("sync_token", "*");
@@ -456,12 +455,22 @@ export async function fetchSections(
 	if (res.status !== 200) throw new Error(`Todoist sections failed: ${res.status}`);
 	const data = await parseJson<SyncReadResponse>(res);
 	const raw = data.sections ?? [];
-	return raw
-		.filter((s) => s.project_id === projectId)
-		.map((s) => ({
-			id: s.id,
-			name: s.name,
-			order: s.order,
-			project_id: s.project_id,
-		})) as TodoistSection[];
+	return raw.map((s) => ({
+		id: s.id,
+		name: s.name,
+		order: s.order,
+		project_id: s.project_id,
+	})) as TodoistSection[];
+}
+
+/**
+ * Get sections for a single project via Sync API.
+ */
+export async function fetchSections(
+	app: AppWithRequest,
+	token: string,
+	projectId: string
+): Promise<TodoistSection[]> {
+	const all = await fetchAllSections(app, token);
+	return all.filter((s) => s.project_id === projectId).sort((a, b) => a.order - b.order);
 }
